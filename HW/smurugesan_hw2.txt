@@ -1,0 +1,53 @@
+HW2
+-- Q1) -Since we need dynamic paritioning for HW2 we need to allow hive to do dynamic partitioning using the following commands
+set hive.exec.dynamic.partition = TRUE;
+set hive.exec.dynamic.partition.mode = nonstrict;
+set hive.exec.max.dynamic.partitions = 1500;
+
+      - Now we create a new table which will hold partitioned values
+
+       CREATE TABLE IF NOT EXISTS nyc_taxi_aug_part_day (vendor_id String,dropoff_datetime timestamp,passenger_count int,trip_distance double,pickup_longitude double,pickup_latitude double,rate_code int,store_and_fwd_flag char(1),dropoff_longitude double,dropoff_latitude double,payment_type CHAR(3),fare_amount double,surcharge double,mta_tax double,tip_amount double,tolls_amount double,total_amount double)
+       PARTITIONED BY (day_of_pickup_time int) 
+       ROW FORMAT DELIMITED 
+       FIELDS TERMINATED BY ','
+       LINES TERMINATED BY '\n'
+       STORED AS TEXTFILE 
+       tblproperties("skip.header.line.count"="2");
+
+      - We are loading data into our unpartitioned table
+
+      - insert overwrite table nyc_taxi_aug_part_day partition (day_of_pickup_time) select vendor_id, dropoff_datetime, passenger_count, trip_distance, pickup_longitude, pickup_latitude, rate_code, store_and_fwd_flag, dropoff_longitude, dropoff_latitude, payment_type, fare_amount, surcharge, mta_tax, tip_amount, tolls_amount, total_amount, day(pickup_datetime) from nyc_taxi_aug ;
+
+-- Q2) a) select count(*) from nyc_taxi_aug where day(pickup_datetime) = 31;
+          Total MapReduce CPU Time Spent: 2 minutes 18 seconds 80 msec
+       b) select count(*) from nyc_taxi_aug_part_day where day_of_pickup_time = 31;
+          Total MapReduce CPU Time Spent: 4 seconds 880 msec
+
+       Querying on the partitioned table nyc_taxi_aug_part_day is faster.
+
+-- Q3) 
+      -CREATE TABLE IF NOT EXISTS nyc_taxi_Aug_buk_dist (vendor_id String,pickup_datetime timestamp,dropoff_datetime timestamp,passenger_count int,trip_distance double,pickup_longitude double,pickup_latitude double,rate_code int,store_and_fwd_flag char(1),dropoff_longitude double,dropoff_latitude double,payment_type CHAR(3),fare_amount double,surcharge double,mta_tax double,tip_amount double,tolls_amount double,total_amount double) 
+      CLUSTERED BY(trip_distance) INTO 10 BUCKETS 
+      ROW FORMAT DELIMITED 
+      FIELDS TERMINATED BY ','
+      LINES TERMINATED BY '\n'
+      STORED AS TEXTFILE 
+      tblproperties("skip.header.line.count"="2");
+
+      -insert overwrite table nyc_taxi_Aug_buk_dist select vendor_id, pickup_datetime, dropoff_datetime, passenger_count, trip_distance, pickup_longitude, pickup_latitude, rate_code, store_and_fwd_flag, dropoff_longitude, dropoff_latitude, payment_type, fare_amount, surcharge, mta_tax, tip_amount, tolls_amount, total_amount from nyc_taxi_aug;
+
+-- Q4)
+      a) select avg(fare_amount) from nyc_taxi_aug where trip_distance > 10 and trip_distance < 15;
+      Total MapReduce CPU Time Spent: 2 minutes 9 seconds 30 msec
+      
+      b) select avg(fare_amount) from nyc_taxi_Aug_buk_dist where trip_distance > 10 and trip_distance < 15;
+      Total MapReduce CPU Time Spent: 1 minutes 25 seconds 800 msec
+
+      Querying on the Grouped table nyc_taxi_Aug_buk_dist is faster
+
+-- Q5)
+      - analyze table nyc_taxi_aug compute statistics for columns vendor_id, pickup_datetime, dropoff_datetime, passenger_count, trip_distance, pickup_longitude, pickup_latitude, rate_code, store_and_fwd_flag, dropoff_longitude, dropoff_latitude, payment_type, fare_amount, surcharge, mta_tax, tip_amount, tolls_amount, total_amount;
+      
+      - describe formatted nyc_taxi_aug passenger_count;
+      min value = 0, max value = 9
+
