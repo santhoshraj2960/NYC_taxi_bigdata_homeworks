@@ -1,0 +1,26 @@
+Question 1:
+    - mkdir Homework
+    - hdfs dfs -ls /user/ever930/hw1 (we have the file yellow_tripdata_2014-08.csv)
+    - hdfs dfs -get /user/ever930/hw1/yellow_tripdata_2014-08.csv Homework/
+
+Question 2: 
+    - Create Database smurugesan;
+    - Create table command
+      CREATE TABLE IF NOT EXISTS nyc_taxi_Aug (vendor_id String,pickup_datetime timestamp,dropoff_datetime timestamp,passenger_count int,trip_distance double,pickup_longitude double,pickup_latitude double,rate_code int,store_and_fwd_flag char(1),dropoff_longitude double,dropoff_latitude double,payment_type CHAR(3),fare_amount double,surcharge double,mta_tax double,tip_amount double,tolls_amount double,total_amount double) 
+      ROW FORMAT DELIMITED 
+      FIELDS TERMINATED BY ','
+      LINES TERMINATED BY '\n'
+      STORED AS TEXTFILE 
+      tblproperties("skip.header.line.count"="2");
+    - more yellow_tripdata_2014-08.csv (1 header and 1 blank space at top)
+    - Load csv data command
+      Load data local inpath "yellow_tripdata_2014-08.csv" into table nyc_taxi_aug;
+
+Question 3:
+    - SELECT * FROM nyc_taxi_aug ORDER BY trip_distance desc LIMIT 10;
+
+Question 4:
+    select hour(pickup_datetime) as hr, sum(passenger_count) from nyc_taxi_aug where pickup_latitude > 40.766703 and pickup_latitude < 40.774724 and pickup_longitude > -73.877101 and pickup_longitude < -73.859692 GROUP BY hour(pickup_datetime) ORDER BY hr;
+
+Question 5:
+    - select 60 * sum(trip_distance)/sum(minute(dropoff_datetime) - minute(pickup_datetime)), hour(pickup_datetime) as hr from nyc_taxi_aug where day(dropoff_datetime)=15 and hour(pickup_datetime) = hour(dropoff_datetime) GROUP BY hour(pickup_datetime) ORDER BY hr;
