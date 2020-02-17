@@ -1,0 +1,37 @@
+Q1) 
+CREATE TABLE IF NOT EXISTS online_retail(InvoiceNo int, StockCode int, Description String, Quantity int, InvoiceDate timestamp, UnitPrice double, CustomerId int, Country String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','LINES TERMINATED BY '\n'STORED AS TEXTFILE tblproperties("skip.header.line.count"="1");
+
+Load data local inpath "online_retail.csv" into table online_retail;
+
+
+Q2)
+Select StockCode, Description, SUM(Quantity) as qt from online_retail Group by StockCode, Description Order by Qt desc Limit 10;
+
+
+Q3) 
+sql('use smurugesan')
+df_retail <- sql("SELECT * FROM online_retail")
+df_retail <- dropna(df_retail)
+df_retail <- where(df_retail, year(df_retail$InvoiceDate)==2011)
+df_retail <- select(df_retail, df_retail$InvoiceNo, df_retail$StockCode, df_retail$Description, df_retail$Quantity, df_retail$InvoiceDate, df_retail$UnitPrice, df_retail$CustomerId, df_retail$Country, df_retail$Quantity * df_retail$UnitPrice)
+names(df_retail)[9] = "SubTotal"
+
+Q4)
+df_retail_revenue = agg(groupBy(df_retail, month(df_retail$InvoiceDate)), SubTotal="sum")
+df_retail_revenue_r = collect(df_retail_revenue)
+
+Q5)
+   month(InvoiceDate) sum(SubTotal)
+                  12      494051.5
+                   1      497482.2
+                   6      603411.3
+                   3      526068.4
+                   5      599736.7
+                   9      878833.6
+                   4      405226.5
+                   8      580852.3
+                   7      531686.3
+                  10      939738.9
+                  11     1057634.2
+                   2      396318.2
+

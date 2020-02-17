@@ -1,0 +1,123 @@
+
+-- Q1. - sql("use smurugesan");
+		- nyc_aug_data <- sql("SELECT * FROM nyc_taxi_aug")
+		- first_day_pickup <- sql("SELECT * FROM nyc_taxi_aug where day(pickup_datetime) = 1")
+		- showDF(first_day_pickup, 25)
+
+-- Q2 
+		- Trips_CSH <- where(first_day_pickup, first_day_pickup$payment_type=="CSH")
+		- Trips_CRD <- where(first_day_pickup, first_day_pickup$payment_type=="CRD")
+		- showDF(Trips_CSH)
+		- showDF(Trips_CRD)
+
+-- Q3. 
+		- Trips_CSH_Pst = select(Trips_CSH, c(colnames(Trips_CSH), Trips_CSH$tip_amount/(Trips_CSH$total_amount - Trips_CSH$tip_amount)))
+		- names(Trips_CSH_Pst)[length(names(Trips_CSH_Pst))]<-"tip_percent"
+
+		- Trips_CRD_Pst = select(Trips_CRD, c(colnames(Trips_CRD), Trips_CRD$tip_amount/(Trips_CRD$total_amount - Trips_CRD$tip_amount)))
+		- names(Trips_CRD_Pst)[length(names(Trips_CRD_Pst))]<-"tip_percent"
+
+-- Q4. 
+		- showDF(avg(groupBy(Trips_CSH_Pst, "payment_type")))[14]
+		- showDF(avg(groupBy(Trips_CRD_Pst, "payment_type")))[14]
+
+-- Q5. 
+		- nyc_aug_data <- sql("SELECT * FROM nyc_taxi_aug")
+		- revenue_on_each_day<-agg(groupBy(nyc_aug_data, dayofmonth(nyc_aug_data$dropoff_datetime)), total_amount = "sum")
+		- revenue_on_each_day_r = collect(revenue_on_each_day)
+		- library(ggplot2)
+		- names(revenue_on_each_day_r)[1]<-paste("day_of_month")
+		- names(revenue_on_each_day_r)[2]<-paste("total_amount")
+		
+		- png("revenue_day.png")
+		- qplot(revenue_on_each_day_r$day_of_month, revenue_on_each_day_r$total_amount, geom="line")
+		- dev.off()
+
+
+
+//Comments
+sql("use smurugesan")
+nyc_aug_data <- sql("SELECT * FROM nyc_taxi_aug")
+first_day_pickup <- sql("SELECT * FROM nyc_taxi_aug where day(pickup_datetime) = 1")
+Trips_CSH <- where(first_day_pickup, first_day_pickup$payment_type=="CSH")
+Trips_CRD <- where(first_day_pickup, first_day_pickup$payment_type=="CRD")
+Trips_CSH_Pst = select(Trips_CSH, c(colnames(Trips_CSH), Trips_CSH$tip_amount/(Trips_CSH$total_amount - Trips_CSH$tip_amount)))
+Trips_CRD_Pst = select(Trips_CRD, c(colnames(Trips_CRD), Trips_CRD$tip_amount/(Trips_CRD$total_amount - Trips_CRD$tip_amount)))
+
+showDF(agg(groupBy(Trips_CSH_Pst, Trips_CSH_Pst$payment_type), Trips_CSH_Pst$tip_percent="avg") )
+
+
+
+CREATE TABLE IF NOT EXISTS online_retail(InvoiceNo int, StockCode int, Description String, Quantity int, InvoiceDate timestamp, UnitPrice double, CustomerId int, Country String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','LINES TERMINATED BY '\n'STORED AS TEXTFILE tblproperties("skip.header.line.count"="1");
+
+Load data local inpath "online_retail.csv" into table online_retail;
+
+Select StockCode, Description, SUM(Quantity) as qt from online_retail Group by StockCode, Description Order by Qt desc Limit 10;
+
+sql('use smurugesan')
+df_retail <- sql("SELECT * FROM online_retail")
+df_retail <- dropna(df_retail)
+df_retail <- where(df_retail, year(df_retail$InvoiceDate)==2011)
+
+df_retail$Description, df_retail$Quantity, df_retail$InvoiceDate, df_retail$UnitPrice, df_retail$CustomerId, df_retail$Country, df_retail$Quantity * df_retail$UnitPrice)
+
+
+df_retail_revenue = agg(groupBy(df_retail, month(df_retail$InvoiceDate)), SubTotal="sum")
+showDF(df_retail_revenue)
+df_retail_revenue_r = collect(df_retail_revenue)
+
+
+showDF(select(employee, employee$eid, employee$name, employee$salary, employee$salary*0.1))
+
+
+   month(InvoiceDate) sum(SubTotal)
+                  12      494051.5
+                   1      497482.2
+                   6      603411.3
+                   3      526068.4
+                   5      599736.7
+                   9      878833.6
+                   4      405226.5
+                   8      580852.3
+                   7      531686.3
+                  10      939738.9
+                  11     1057634.2
+                   2      396318.2
+
+Q1) 
+CREATE TABLE IF NOT EXISTS online_retail(InvoiceNo int, StockCode int, Description String, Quantity int, InvoiceDate timestamp, UnitPrice double, CustomerId int, Country String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','LINES TERMINATED BY '\n'STORED AS TEXTFILE tblproperties("skip.header.line.count"="1");
+
+Load data local inpath "online_retail.csv" into table online_retail;
+
+
+Q2)
+Select StockCode, Description, SUM(Quantity) as qt from online_retail Group by StockCode, Description Order by Qt desc Limit 10;
+
+
+Q3) 
+sql('use smurugesan')
+df_retail <- sql("SELECT * FROM online_retail")
+df_retail <- dropna(df_retail)
+df_retail <- where(df_retail, year(df_retail$InvoiceDate)==2011)
+df_retail <- select(df_retail, df_retail$InvoiceNo, df_retail$StockCode, df_retail$Description, df_retail$Quantity, df_retail$InvoiceDate, df_retail$UnitPrice, df_retail$CustomerId, df_retail$Country, df_retail$Quantity * df_retail$UnitPrice)
+names(df_retail)[9] = "SubTotal"
+
+Q4)
+df_retail_revenue = agg(groupBy(df_retail, month(df_retail$InvoiceDate)), SubTotal="sum")
+df_retail_revenue_r = collect(df_retail_revenue)
+
+Q5)
+   month(InvoiceDate) sum(SubTotal)
+                  12      494051.5
+                   1      497482.2
+                   6      603411.3
+                   3      526068.4
+                   5      599736.7
+                   9      878833.6
+                   4      405226.5
+                   8      580852.3
+                   7      531686.3
+                  10      939738.9
+                  11     1057634.2
+                   2      396318.2
+
