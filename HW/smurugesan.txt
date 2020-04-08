@@ -23,6 +23,7 @@ that started and ended both in this hourly slot. Ignore trips that run across di
 slots. The speed of a single trip is calculated as total distance divided by total time duration
 (miles/hour). Sort the results by hour in ascending order.
 
+----------------------------------------------------------------------------------------------------------------------------
 
 Answers for the above questions:
 Question 1:
