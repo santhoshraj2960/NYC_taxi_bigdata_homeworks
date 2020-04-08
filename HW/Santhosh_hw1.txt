@@ -1,3 +1,30 @@
+Questions:
+
+1. (10pts) First, create a Linux folder in your home directory called “Homework” using Linux
+commands. Then enter this folder. Visit the HDFS path /user/ever930/hw1 using Hadoop
+commands and check what file is in there. There should be a file, which stores the taxi trip
+data for NYC in August 2014. Obtain this file from HSDF and save it (use the same file name)
+into the Linux folder “Homework” you just created. Submit the Linux/HDFS commands in
+every step. One in each line. Do not take screenshots.
+
+2. (20 pts) Start Hive. Create a new database named after your hawkid. Create a Hive table
+“nyc_taxi_Aug” for the NYC Yellow Taxi Data (August 2014). Load all the yellow taxi August
+2014 data into the nyc_taxi_Aug table. Make sure to check the headers. There are two rows
+in the file before the data, where the first row is the column names and the second row is a
+blank row.
+
+3. (20 pts) Write a HiveQL query to show the top 10 longest trips in the nyc_taxi_Aug table.Show all the columns. Sort the results by distance in descending order.
+
+4. (20 pts) The drop-off/pick-up area of the LaGuardia Airport is between latitudes [40.766703,40.774724] and longitudes [-73.877101, -73.859692]. Write a Hive query to find the totalnumber of passengers picked up by yellow taxi at this airport during each hour of day (0 ~23) in the whole month. Sort the rows by hour in ascending order.
+
+5. (30 pts) Calculate the average speed of taxis in NYC during each hour of day (0-23) on August
+15. The average speed within an hour is calculated as the average of the speed of all the trips
+that started and ended both in this hourly slot. Ignore trips that run across different hourly
+slots. The speed of a single trip is calculated as total distance divided by total time duration
+(miles/hour). Sort the results by hour in ascending order.
+
+----------------------------------------------------------------------------------------------------------------------------
+
 Question 1:
     - mkdir Homework
     - hdfs dfs -ls /user/ever930/hw1 (we have the file yellow_tripdata_2014-08.csv)
