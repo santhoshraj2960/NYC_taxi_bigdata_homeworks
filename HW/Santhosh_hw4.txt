@@ -43,6 +43,9 @@ pickup_longitude, dropoff_latitude, dropoff_longitude. Fit the learned model on 
 day1_training dataframe (same dataset for training and testing). Show the first 20 rows of
 the clustering results and report the centroid coordinates of each cluster using R comments.
 
+----------------------------------------------------------------------------------------------------------------------------
+
+Answers for above questions
 
 Q1)
     - sql("use smurugesan")
