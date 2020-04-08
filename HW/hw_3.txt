@@ -1,4 +1,39 @@
+Questions
 
+Q1 (20 pts). Start sparkR session correctly. Use the nyc_taxi_Aug table in Hive you previously
+created for HW1. Create a Spark DataFrame in R and load all the taxi trips started on Aug. 1.
+Show the top 25 rows of this Spark DataFrame.
+
+Q2 (20 pts). Write R code in SparkR to find trips on Aug. 1 paid for by credit card (CRD) and trips
+paid for by cash (CSH) from the Spark DataFrame created in Q1. Save these two groups of trips
+into two new Spark DataFrames, namely, “Trips_CRD” and “Trips_CSH”. Use the Spark
+DataFrame functions (e.g., SELECT, WHERE, groupBy) instead of using the sql() function in this
+question. Show the first 20 rows of each DataFrame to validate the results.
+
+Q3 (20 pts). Use the two DataFrames created in Q2 to perform the following analysis in SparkR.
+Calculate the percentage of tip with respect to all the other charges (i.e., tip_percent =
+tip_amount/( total_payment – tip_amount)). Generate two new Spark DataFrames with the
+extra tip_percent column added to the “Trips_CRD” and the “’Trips_CSH” DataFrames,
+respectively. You will get two new Spark DataFrames, “Trips_CRD_Pct” and “Trips_CSH_Pct”.
+Again, you must use Spark DataFrame functions to solve this problem, rather than sending
+queries to Hive using sql().
+
+Q4 (15 pts). Use the spark DataFrames you obtained from Q3 to calculate on average how many
+percent passengers tip (average of tip_percent) when paying by credit card and by cash,
+respectively. The results should be two numbers. Again you must not use the sql() function.
+
+Q5. (25 pts) For each day in August, calculate the total revenue of all the taxi drivers. The total
+revenue of a day is the total amount of money paid in all the trips that end on that day. You
+need to load the whole month’s data again into a Spark DataFrame (using sql()). Then use the
+SparkR DataFrame functions (e.g., SELECT, WHERE, groupBy) to aggregate the results into
+another Spark DataFrame with 31 rows. Convert the second spark DataFrame to an R data
+frame. Finally, generate a line chart to visualize the data, where the X-axis is the day of month
+and the Y-axis is the total revenue of all the taxi drivers on that day. Name this image file
+“plot.png”. Save the image file and include it in your submission.
+
+----------------------------------------------------------------------------------------------------------------------------
+
+Answers for the above questions
 -- Q1. - sql("use smurugesan");
 		- nyc_aug_data <- sql("SELECT * FROM nyc_taxi_aug")
 		- first_day_pickup <- sql("SELECT * FROM nyc_taxi_aug where day(pickup_datetime) = 1")
